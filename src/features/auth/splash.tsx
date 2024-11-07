@@ -1,12 +1,23 @@
 import { localAnimated } from "@assets/lottie";
 import { Block, Button, MainContainer, Text } from "@components";
+import { RootParamList } from "@navigation/config/type";
+import { useNavigation, NavigationProp, NavigationState } from "@react-navigation/native";
 import theme, { makeStyles } from "@theme";
 import { EDGES } from "@utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
 import LottieView from "lottie-react-native";
 
-const SplashScreen = () => {
+
+type CustomNavigationProp = Omit<NavigationProp<RootParamList>, 'getState'> & {
+  getState(): NavigationState | undefined;
+};
+
+function splash (){
   const styles = useStyle();
+  const navigation = useNavigation<CustomNavigationProp>();
+  const handleGetStarted = () => {
+    navigation.navigate('Login');
+  };
   return (
     <MainContainer edges={EDGES.LEFT_RIGHT}>
       <LinearGradient
@@ -34,19 +45,18 @@ const SplashScreen = () => {
               color={"blueAF"}
               fontWeight={"700"}
               fontSize={24}
-              textDecorationLine={"underline"}
             >
-              Phanxico Xavie GX. Thạch Đà
+              Phanxicô Xaviê GX. Thạch Đà
             </Text>
           </Block>
-          <Button label="Get Started" textStyle={{ fontWeight: "700" }} />
+          <Button label="Get Started" textStyle={{ fontWeight: "700" }} onPress={handleGetStarted}/>
         </Block>
       </LinearGradient>
     </MainContainer>
   );
 };
 
-export default SplashScreen;
+export default splash;
 
 const useStyle = makeStyles(() => ({
   container: {

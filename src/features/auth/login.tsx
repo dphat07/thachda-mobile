@@ -9,7 +9,7 @@ import { localImage } from "@assets/images";
 
 import { useForm, Controller } from "react-hook-form";
 
-const LoginScreen = () => {
+function login (){
   const styles = useStyle();
   const { control } = useForm();
 
@@ -85,7 +85,7 @@ const LoginScreen = () => {
   );
 };
 
-export default memo(LoginScreen);
+export default memo(login);
 
 const useStyle = makeStyles((theme) => ({
   container: {
