@@ -43,7 +43,7 @@ const Colors = {
     blue10:"#F2F7FF",
     blue81:"#B1D6FF",
     shadow:"#20496D1A",
-    blue00:'#007AFF',
+
     // Rose colors
     rose_50: "#fff1f2",
     rose_100: "#ffe4e6",
