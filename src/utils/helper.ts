@@ -109,10 +109,7 @@ export const Helper = {
     const diffInHours = date.diff(date.startOf('day'), 'minute') / 60
     return diffInHours
   },
-  getWorkedTime: (time: string) => {
-    const diffInHours = dayjs(new Date()).diff(time, 'minute') / 60
-    return diffInHours
-  },
+
   formatMinutesToHoursAndMinutes: (totalMinutes: number) => {
     const hours = Math.floor(totalMinutes / 60)
     const hoursFormat = hours.toString().padStart(2, '0')
@@ -169,57 +166,4 @@ export const Helper = {
   isToday: (date: Date) => {
     return dayjs(date).diff(dayjs(new Date()), 'day') === 0
   }
-}
-export const getCheckInPosition = (
-  timeCheckIn: string,
-  intervalWidth: number
-): number => {
-  const decimalTimeFromMidnight = Helper.getDecimalTimeFromMidnight(timeCheckIn)
-  const decimalTimeFromEightAm = Helper.getDecimalTimeFromEightAm(timeCheckIn)
-
-  if (decimalTimeFromMidnight < 7) return decimalTimeFromEightAm * intervalWidth
-  if (decimalTimeFromMidnight > 18) return 12 * intervalWidth
-
-  return decimalTimeFromEightAm * intervalWidth + intervalWidth * 2
-}
-
-export const getCheckOutPosition = (
-  timeCheckIn: string,
-  workingHours: number,
-  intervalWidth: number
-): number => {
-  const decimalTimeFromEightAm = Helper.getDecimalTimeFromEightAm(timeCheckIn)
-  const maxPosition = 10 * intervalWidth
-  const checkOutPosition =
-    (decimalTimeFromEightAm + workingHours) * intervalWidth
-  const defaultPosition =
-    intervalWidth * (decimalTimeFromEightAm < 0 ? 1 : 2) + 5
-
-  return Math.min(checkOutPosition, maxPosition) + defaultPosition
-}
-
-export const groupByMonth = (data) => {
-  if (!Array.isArray(data)) {
-    console.error("Expected 'data' to be an array")
-    return []
-  }
-  const groupedData = {}
-  data.forEach((item) => {
-    if (item && item.checkInAt) {
-      const month = Helper.format_MM_YY_to_string(
-        dayjs(item.checkInAt).format('YYYY-MM')
-      )
-      if (!groupedData[month]) {
-        groupedData[month] = []
-      }
-      groupedData[month].push(item)
-    } else {
-      console.warn("Item does not contain 'checkInAt'", item)
-    }
-  })
-
-  return Object.entries(groupedData).map(([month, items]) => ({
-    date: month,
-    data: items
-  }))
 }

@@ -1,18 +1,51 @@
-import React, { memo } from "react";
+import { memo, useEffect } from "react";
 import { Block, Button, MainContainer, Text, Input } from "@components";
 import KeyboardDismissWrapper from "@components/keyboard-dismiss-wrapper";
 import { EDGES } from "@utils/helper";
 import { LinearGradient } from "expo-linear-gradient";
-import theme, { makeStyles } from "@theme";
-import { Image } from "react-native";
+import theme from "@theme";
 import { localImage } from "@assets/images";
+import { Image } from "expo-image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { validateUser } from "@utils/validate";
+import axios from "axios";
+import { Alert } from "react-native";
 
-import { useForm, Controller } from "react-hook-form";
+type LoginForm = {
+  email: string;
+  password: string;
+};
 
-function login (){
-  const styles = useStyle();
-  const { control } = useForm();
-
+function Login() {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+  } = useForm({
+    resolver: zodResolver(validateUser),
+    mode: "onChange",
+    defaultValues: {
+      email: "bddquan@gmail.com",
+      password: "123456",
+    },
+  });
+  const handleLogin = async (data: LoginForm) => {
+    try {
+      const response = await axios.post(
+        "http://13.213.192.94:3000/api/v1/auth/login",
+        data
+      );
+      if (response.status === 200 && response.data?.data?.accessToken) {
+        Alert.alert("Đăng nhập thành công", "Chào mừng bạn!");
+      } else {
+        Alert.alert("Đăng nhập thất bại", "Dữ liệu phản hồi không hợp lệ.");
+      }
+    } catch (error) {
+      Alert.alert("Đăng nhập thất bại");
+    }
+  };
   return (
     <KeyboardDismissWrapper>
       <MainContainer edges={EDGES.LEFT_RIGHT}>
@@ -24,17 +57,11 @@ function login (){
           ]}
           start={{ x: 0, y: 0 }}
           end={{ x: 0, y: 0.8 }}
-          style={styles.container}
+          style={{ flex: 1 }}
         >
-          <Block
-            flex={1}
-            justifyContent="center"
-            mx="l"
-            gap="_10"
-            style={styles.content}
-          >
+          <Block flex={1} justifyContent="center" mx="l" gap="_10">
             <Image
-              resizeMode="contain"
+              contentFit="contain"
               style={{
                 width: 100,
                 height: 100,
@@ -49,33 +76,58 @@ function login (){
               borderWidth={0}
               borderRadius={"m"}
             >
-              <Text style={styles.headerText}>Đăng nhập</Text>
-              <Text style={[styles.subHeaderText, { marginBottom: 15 }]}>
+              <Text
+                color={"blueAF"}
+                paddingVertical={"_20"}
+                fontWeight={"900"}
+                fontSize={26}
+                textAlign={"center"}
+              >
+                Đăng nhập
+              </Text>
+              <Text
+                mb={"_15"}
+                textAlign={"center"}
+                fontSize={14}
+                color={"grey6C"}
+              >
                 Vui lòng đăng nhập để sử dụng ứng dụng
               </Text>
 
               <Block marginHorizontal={"_28"} gap={"_15"}>
                 <Input
-                  name="username"
+                  name="email"
                   label="Email"
                   placeholder="Nhập email"
-                  labelStyle={styles.labelStyle}
+                  labelStyle={{
+                    color: theme.colors.grey6C,
+                    marginBottom: 2,
+                    paddingTop: 6,
+                  }}
                   control={control}
                 />
                 <Input
                   name="password"
                   label="Mật khẩu"
                   placeholder="Nhập mật khẩu"
-                  labelStyle={styles.labelStyle}
+                  labelStyle={{
+                    color: theme.colors.grey6C,
+                    marginBottom: 2,
+                    paddingTop: 6,
+                  }}
                   control={control}
                   secureTextEntry={true}
                 />
               </Block>
               <Button
-                buttonStyle={styles.buttonStyle}
+                buttonStyle={{
+                  marginHorizontal: 28,
+                  justifyContent: "center",
+                  marginTop: 20,
+                }}
                 label="Đăng nhập"
                 textStyle={{ color: "white", fontWeight: "bold" }}
-                onPress={() => {}}
+                onPress={handleSubmit(handleLogin)}
               />
             </Block>
           </Block>
@@ -83,70 +135,6 @@ function login (){
       </MainContainer>
     </KeyboardDismissWrapper>
   );
-};
+}
 
-export default memo(login);
-
-const useStyle = makeStyles((theme) => ({
-  container: {
-    flex: 1,
-  },
-  content: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.18,
-    shadowRadius: 1.0,
-    elevation: 1,
-  },
-  msgErrorContainer: {
-    alignSelf: "center",
-    backgroundColor: "rgba(228, 93, 93, 0.06)",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 6,
-    paddingVertical: 8,
-    borderRadius: 5,
-  },
-  headerText: {
-    color: theme.colors.blueAF,
-    textAlign: "center",
-    fontSize: 26,
-    fontWeight: "900",
-    paddingVertical: 20,
-  },
-  subHeaderText: {
-    textAlign: "center",
-    fontSize: 14,
-    color: theme.colors.grey6C,
-  },
-  labelStyle: {
-    fontSize: 12,
-    color: theme.colors.grey6C,
-    marginBottom: 2,
-    paddingTop: 6,
-  },
-
-  buttonStyle: {
-    marginHorizontal: 28,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: theme.colors.blueAF,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonGoogle: {
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-  },
-  errorMessage: {
-    color: "red",
-    marginTop: 5,
-    fontSize: 12,
-  },
-}));
+export default memo(Login);

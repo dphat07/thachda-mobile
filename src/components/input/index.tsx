@@ -1,4 +1,4 @@
-import { NativeSyntheticEvent, TextInputFocusEventData } from "react-native";
+import { NativeSyntheticEvent, TextInputFocusEventData, TextStyle } from "react-native";
 
 import { Controller } from "react-hook-form";
 import { TextInput } from "../text-input";
@@ -49,5 +49,5 @@ const useStyles = makeStyles((theme) => ({
     color: theme.colors.title,
     fontSize: 14,
     backgroundColor: "transparent",
-  },
+  } as TextStyle,
 }));
